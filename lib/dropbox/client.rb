@@ -76,9 +76,11 @@ module Dropbox
     # @param [String] path
     # @return [Dropbox::FileMetadata] metadata
     # @return [HTTP::Response::Body] body
+
+    # return [HTTP::Response] resp
     def download(path)
-      resp, body = content_request('/files/download', path: path)
-      return FileMetadata.new(resp), body
+      meta, resp  = stream_content_request('/files/download', path: path)
+      return FileMetadata.new(meta), resp
     end
 
     # Get the metadata for a file or folder.
