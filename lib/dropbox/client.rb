@@ -498,6 +498,16 @@ module Dropbox
         return file, resp.body
       end
 
+      def stream_content_request(action, args={})
+        url = CONTENT_API + action
+        resp = HTTP.auth('Bearer ' + @access_token)
+          .headers('Dropbox-API-Arg' => args.to_json).get(url)
+
+        raise ApiError.new(resp) if resp.code != 200
+        file = JSON.parse(resp.headers['Dropbox-API-Result'])
+        return file, resp
+      end
+
       def upload_request(action, body, args={})
         resp = HTTP.auth('Bearer ' + @access_token).headers({
           'Content-Type' => 'application/octet-stream',
