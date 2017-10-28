@@ -135,17 +135,40 @@ module Dropbox
     #
     # @param [String] cursor
     # @return [Array<Dropbox::Metadata>]
-    def continue_list_folder(cursor)
-      resp = request('/files/list_folder/continue', cursor: cursor)
-      resp['entries'].map { |e| parse_tagged_response(e) }
+    # def continue_list_folder(cursor)
+    #   resp = request('/files/list_folder/continue', cursor: cursor)
+    #   resp['entries'].map { |e| parse_tagged_response(e) }
+    # end
+
+    # # Get a cursor for a folder's current state.
+    # #
+    # # @param [String] path
+    # # @return [String] cursor
+    # def get_latest_list_folder_cursor(path)
+    #   resp = request('/files/list_folder/get_latest_cursor', path: path)
+    #   resp['cursor']
+    # end
+
+    def list_folder_with_cursor(path,recursive)
+      resp = request('/files/list_folder', path: path,recursive: recursive)
+      entries = resp['entries'].map { |e| parse_tagged_response(e) }
+      cursor = resp['cursor']
+      has_more = resp['has_more']
+
+      {:entries => entries, :cursor => cursor, :has_more => has_more}
     end
 
-    # Get a cursor for a folder's current state.
-    #
-    # @param [String] path
-    # @return [String] cursor
-    def get_latest_list_folder_cursor(path)
-      resp = request('/files/list_folder/get_latest_cursor', path: path)
+    def continue_list_folder(cursor)
+      resp = request('/files/list_folder/continue', cursor: cursor)
+      puts resp.inspect
+      entries = resp['entries'].map { |e| parse_tagged_response(e) }
+      cursor = resp['cursor']
+      has_more = resp['has_more']
+      {:entries => entries, :cursor => cursor, :has_more => has_more}
+    end
+
+    def get_latest_list_folder_cursor(path,recursive)
+      resp = request('/files/list_folder/get_latest_cursor', path: path, recursive: recursive)
       resp['cursor']
     end
 
