@@ -162,7 +162,7 @@ module Dropbox
 
     def continue_list_folder(cursor)
       resp = request('/files/list_folder/continue', cursor: cursor)
-      puts resp.inspect
+      #puts resp.inspect
       entries = resp['entries'].map { |e| parse_tagged_response(e) }
       cursor = resp['cursor']
       has_more = resp['has_more']
